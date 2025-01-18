@@ -1,53 +1,33 @@
 # Unity Asset Loader Package
 
-A type-safe resource loading system that uses attributes to define asset paths, caches loaded resources, and handles persistent objects.
+A type-safe resource loading system for Unity that provides attribute-based path configuration, resource caching, and automated DontDestroyOnLoad object management.
 
-## Core Components
+## Quick Start
 
-### ResourceAttribute
-Configures how a resource should be loaded:
+1. **Load Resources**
+```csharp
+// Load a single resource
+var prefab = ResourceLoader<MyComponent>.Load();
 
+// Load all prefabs in a folder
+var prefabs = ResourceLoader<GameObject>.LoadAll("Prefabs/UI");
+```
+
+2. **Configure Resource Paths**
 ```csharp
 // Basic usage - loads from Resources/MyPrefab
 [Resource(name: "MyPrefab")]
 public class MyComponent : MonoBehaviour { }
 
-// Custom resource path - loads from Resources/Prefabs/UI/MyPrefab
+// Custom path - loads from Resources/Prefabs/UI/MyPrefab 
 [Resource(resourcePath: "Prefabs/UI", name: "MyPrefab")]
 public class UIComponent : MonoBehaviour { }
-
-// Asset path for editor tools (optional)
-[Resource(assetPath: "Assets/Prefabs/UI/MyPrefab.prefab", name: "MyPrefab")]
-public class EditorComponent : MonoBehaviour { }
 ```
 
-### ResourceLoader<T>
-Generic loader that handles caching and loading of resources:
-
+3. **Setup Persistent Objects**
 ```csharp
-// Load a single resource (uses path from attribute)
-var prefab = ResourceLoader<MyComponent>.Load();
-
-// Try pattern
-if (ResourceLoader<MyComponent>.TryLoad(out var component)) {
-    // Use component
-}
-
-// Load all resources in a path
-var prefabs = ResourceLoader<GameObject>.LoadAll("Prefabs/UI");
-
-// Clear cache if needed
-ResourceLoader<MyComponent>.ClearCache();
-```
-
-## DontDestroyOnLoad System
-
-### DontDestroyOnLoadComponent
-Marker component to identify persistent objects:
-
-```csharp
-// Add to any prefab that should persist between scenes
-public class MyPersistentManager : MonoBehaviour 
+// Mark objects to persist between scenes
+public class MyManager : MonoBehaviour 
 {
     private void Awake()
     {
@@ -56,64 +36,179 @@ public class MyPersistentManager : MonoBehaviour
 }
 ```
 
-### AutoPersistent
-Automatically loads and instantiates marked persistent objects:
+## Core Features
 
+- Attribute-based resource path configuration
+- Type-safe resource loading and caching
+- Automated DontDestroyOnLoad object management
+- Configurable paths and validation
+- Error handling and logging
+
+## Essential Configuration
+
+### DontDestroyOnLoad Path
+
+Change the default persistent objects path (`Resources/DontDestroyOnLoad`):
+
+1. **Using ScriptableObject**:
 ```csharp
-// Configure in AppConfig
-public class AppConfig : ScriptableObject 
+[CreateAssetMenu(fileName = "AssetLoaderConfig", menuName = "AssetLoader/Config")]
+internal sealed class AssetLoaderConfig : ScriptableObject, IAssetLoaderConfig 
 {
-    [SerializeField] 
-    private string dontDestroyResourceFolderPath = "DontDestroyOnLoad";
+    [SerializeField] private string _dontDestroyPath = "CustomPath/Persistent";
+    public string DontDestroyPath => _dontDestroyPath;
 }
-
-// Objects are automatically loaded at runtime
-// No manual instantiation needed
 ```
 
-Features:
-- Automatic instantiation on game start
-- Prevents duplicate instances
-- Maintains original object names
-- Loads from configurable resource path
+2. **Using Runtime Config**:
+```csharp
+[Resource("Assets/Resource/DontDestroyOnLoad", "AssetLoaderConfig", "DontDestroyOnLoad")]
+internal sealed class AssetLoaderConfig : ScriptableSingleton<AssetLoaderConfig>, IAssetLoaderConfig
+{
+    public string DontDestroyPath => "DontDestroyOnLoad";
+}
 
-## How Path Resolution Works
+// No manual initialization needed - automatically handled by ScriptableSingleton
+```
 
-1. ResourceLoader checks for ResourceAttribute on type
-2. If name is provided, uses that as minimum path
-3. If resourcePath is provided, combines it with name
-4. Falls back to type name if no attribute found
+### Resource Loading
 
-Path resolution order:
-- `resourcePath/name` if both provided
-- `name` if only name provided
-- Type name as fallback
-- Validates against parent directory traversal (`..`)
+```csharp
+// With error handling
+if (ResourceLoader<MyComponent>.TryLoad(out var component)) {
+    // Use component
+}
 
-## Caching
-
-- Resources are cached by type and path
-- Single resources and resource arrays cached separately
-- Cache can be:
-  - Cleared completely with `ClearCache()`
-  - Cleared for specific resource with `RemoveFromCache()`
-- Cache key format: `TypeName:ResourcePath`
+// Load multiple
+if (ResourceLoader<GameObject>.TryLoadAll("Prefabs/UI", out var prefabs)) {
+    foreach (var prefab in prefabs) {
+        // Use prefab
+    }
+}
+```
 
 ## Best Practices
 
-1. Always provide at least a name in ResourceAttribute
-2. Use resourcePath for better organization
-3. Clear cache when reloading assets
-4. Use TryLoad when resource might not exist
-5. Cache references to frequently used resources locally
-6. Group persistent objects in dedicated Resources folder
-7. Keep persistent object count minimal for performance
+1. **Resource Organization**
+    - Group related resources in dedicated folders
+    - Use clear, descriptive names
+    - Keep persistent object count minimal
 
-## Common Issues
+2. **Error Handling**
+    - Use TryLoad/TryLoadAll for safer loading
+    - Handle missing resources gracefully
+    - Check logs for validation errors
 
-- Missing ResourceAttribute: Will log warning and use type name
-- Invalid path (null/empty): Will log error and return null
-- Path with `..`: Will log error and return null
-- Resource not found: Will log warning and return null
-- Resource array not found: Will log warning and return null
-- Duplicate persistent objects: Only first instance will be created
+3. **Performance**
+    - Cache frequently accessed resources
+    - Clear cache when reloading assets
+    - Use ResourceAttribute for path optimization
+
+## Common Issues & Solutions
+
+1. **Missing Resources**
+    - Verify path in ResourceAttribute
+    - Check Resources folder structure
+    - Ensure prefabs are marked as Resources
+
+2. **Duplicate Persistent Objects**
+    - Use unique names for persistent prefabs
+    - Check for duplicate DontDestroyOnLoadComponent
+    - Verify initialization order
+
+3. **Path Validation**
+    - Avoid parent directory traversal (`..`)
+    - Use forward slashes for paths
+    - Keep paths relative to Resources folder
+
+## Technical Details
+
+### Resource Loading Pipeline
+
+1. Check ResourceAttribute on type
+2. Resolve and validate path
+3. Load from Resources folder
+4. Cache for future use
+
+### Caching System
+
+- Type and path-based cache
+- Separate single/array resource caches
+- Automatic cache management
+- Manual cache clearing available
+
+## API Reference
+
+### ResourceLoader<T>
+```csharp
+public static class ResourceLoader<T> where T : Object
+{
+    public static T Load();
+    public static bool TryLoad(out T resource);
+    public static T[] LoadAll(string path);
+    public static bool TryLoadAll(string path, out T[] resources);
+    public static void ClearCache();
+    public static void RemoveFromCache();
+}
+```
+
+### ResourceAttribute
+```csharp
+public sealed class ResourceAttribute : Attribute
+{
+    public ResourceAttribute(
+        string assetPath = "", 
+        string name = "", 
+        string resourcePath = ""
+    );
+}
+```
+
+### IAssetLoaderConfig
+```csharp
+public interface IAssetLoaderConfig
+{
+    string DontDestroyPath { get; }
+}
+```
+
+## Advanced Usage
+
+### Custom Resource Resolution
+```csharp
+// Custom path provider
+public class CustomPathProvider : IResourcePathProvider 
+{
+    public string GetPath(Type type) => $"Custom/{type.Name}";
+}
+
+// Register provider
+ResourceLoader.SetPathProvider(new CustomPathProvider());
+```
+
+### Manual Cache Management
+```csharp
+// Clear specific type
+ResourceLoader<MyComponent>.ClearCache();
+
+// Remove single entry
+ResourceLoader<MyComponent>.RemoveFromCache();
+```
+
+### Async Loading
+```csharp
+// Load resource asynchronously
+var request = ResourceLoader<GameObject>.LoadAsync("Prefabs/Large");
+yield return request;
+var prefab = request.asset;
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
+
+## License
+
+This package is licensed under the MIT License - see the LICENSE file for details.
