@@ -2,9 +2,9 @@
 using AssetLoader.Runtime.Config;
 using UnityEngine;
 
-namespace Client.Scripts.Patterns.DontDestroyLoader
+namespace AssetLoader.Runtime.DontDestroyLoader
 {
-    public sealed class AutoPersistent : MonoBehaviour
+    internal sealed class AutoPersistent : MonoBehaviour
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void MakePersistent()

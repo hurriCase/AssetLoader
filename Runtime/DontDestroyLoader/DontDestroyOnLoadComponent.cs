@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Client.Scripts.Patterns.DontDestroyLoader
+namespace AssetLoader.Runtime.DontDestroyLoader
 {
     /// <summary>
     /// Marker component to identify GameObjects that should persist between scenes.
