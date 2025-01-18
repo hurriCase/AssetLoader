@@ -14,3 +14,10 @@
 ## [1.0.4] - 2025-01-18
 ### Fixed
 - Changed access modifiers from internal to public.
+## [1.1.0] - 2025-01-18
+### Feature
+- Added adjustable AssetLoaderConfig.
+### Fixed
+- Changed namespaces and access modifier.
+### Update
+- Changed README with new AssetLoaderConfig feature.
