@@ -1,6 +1,6 @@
 # Unity Asset Loader Package
 
-A type-safe resource loading system that uses attributes to define asset paths and caches loaded resources.
+A type-safe resource loading system that uses attributes to define asset paths, caches loaded resources, and handles persistent objects.
 
 ## Core Components
 
@@ -40,6 +40,43 @@ var prefabs = ResourceLoader<GameObject>.LoadAll("Prefabs/UI");
 ResourceLoader<MyComponent>.ClearCache();
 ```
 
+## DontDestroyOnLoad System
+
+### DontDestroyOnLoadComponent
+Marker component to identify persistent objects:
+
+```csharp
+// Add to any prefab that should persist between scenes
+public class MyPersistentManager : MonoBehaviour 
+{
+    private void Awake()
+    {
+        gameObject.AddComponent<DontDestroyOnLoadComponent>();
+    }
+}
+```
+
+### AutoPersistent
+Automatically loads and instantiates marked persistent objects:
+
+```csharp
+// Configure in AppConfig
+public class AppConfig : ScriptableObject 
+{
+    [SerializeField] 
+    private string dontDestroyResourceFolderPath = "DontDestroyOnLoad";
+}
+
+// Objects are automatically loaded at runtime
+// No manual instantiation needed
+```
+
+Features:
+- Automatic instantiation on game start
+- Prevents duplicate instances
+- Maintains original object names
+- Loads from configurable resource path
+
 ## How Path Resolution Works
 
 1. ResourceLoader checks for ResourceAttribute on type
@@ -58,17 +95,9 @@ Path resolution order:
 - Resources are cached by type and path
 - Single resources and resource arrays cached separately
 - Cache can be:
-    - Cleared completely with `ClearCache()`
-    - Cleared for specific resource with `RemoveFromCache()`
+  - Cleared completely with `ClearCache()`
+  - Cleared for specific resource with `RemoveFromCache()`
 - Cache key format: `TypeName:ResourcePath`
-
-## Common Issues
-
-- Missing ResourceAttribute: Will log warning and use type name
-- Invalid path (null/empty): Will log error and return null
-- Path with `..`: Will log error and return null
-- Resource not found: Will log warning and return null
-- Resource array not found: Will log warning and return null
 
 ## Best Practices
 
@@ -77,3 +106,14 @@ Path resolution order:
 3. Clear cache when reloading assets
 4. Use TryLoad when resource might not exist
 5. Cache references to frequently used resources locally
+6. Group persistent objects in dedicated Resources folder
+7. Keep persistent object count minimal for performance
+
+## Common Issues
+
+- Missing ResourceAttribute: Will log warning and use type name
+- Invalid path (null/empty): Will log error and return null
+- Path with `..`: Will log error and return null
+- Resource not found: Will log warning and return null
+- Resource array not found: Will log warning and return null
+- Duplicate persistent objects: Only first instance will be created
