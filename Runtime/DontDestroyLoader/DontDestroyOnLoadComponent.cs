@@ -7,5 +7,5 @@ namespace Client.Scripts.Patterns.DontDestroyLoader
     /// Add this component to any prefab that should be automatically instantiated
     /// and marked as DontDestroyOnLoad at runtime.
     /// </summary>
-    internal sealed class DontDestroyOnLoadComponent : MonoBehaviour { }
+    public sealed class DontDestroyOnLoadComponent : MonoBehaviour { }
 }

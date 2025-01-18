@@ -11,3 +11,6 @@
 ### Feature
 - Added DontDestroyLoader.
 - Updated README.md.
+## [1.0.4] - 2025-01-18
+### Fixed
+- Changed access modifiers from internal to public.

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Client.Scripts.Patterns.DontDestroyLoader
 {
-    internal sealed class AutoPersistent : MonoBehaviour
+    public sealed class AutoPersistent : MonoBehaviour
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void MakePersistent()
