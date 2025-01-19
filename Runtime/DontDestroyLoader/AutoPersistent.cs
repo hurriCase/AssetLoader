@@ -7,7 +7,7 @@ namespace AssetLoader.Runtime.DontDestroyLoader
     internal sealed class AutoPersistent : MonoBehaviour
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void MakePersistent()
+        internal static void MakePersistent()
         {
             if (ResourceLoader<GameObject>.TryLoadAll(AssetLoaderInitializer.LoaderConfig.DontDestroyPath,
                     out var dontDestroyObjects) is false)

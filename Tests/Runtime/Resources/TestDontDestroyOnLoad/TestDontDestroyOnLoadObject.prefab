@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1299491260036812867}
   - component: {fileID: 8127813279456454588}
   m_Layer: 0
-  m_Name: DontDestroyOnLoadTestObject
+  m_Name: TestDontDestroyOnLoadObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

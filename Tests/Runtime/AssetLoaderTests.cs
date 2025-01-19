@@ -16,6 +16,10 @@ namespace AssetLoader.Tests.Runtime
         [OneTimeSetUp]
         public void SetUp()
         {
+            var testCustomConfig = new TestCustomConfig();
+            AssetLoaderInitializer.Init(testCustomConfig);
+            AutoPersistent.MakePersistent();
+
             ResourceLoader<GameObject>.ClearCache();
             ResourceLoader<AssetLoaderConfig>.ClearCache();
         }
