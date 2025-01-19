@@ -11,8 +11,6 @@ namespace AssetLoader.Tests.Runtime
 {
     internal sealed class AssetLoaderPlayModeTests
     {
-        private GameObject _testObject;
-
         [OneTimeSetUp]
         public void SetUp()
         {
@@ -31,11 +29,12 @@ namespace AssetLoader.Tests.Runtime
             yield return new WaitForSeconds(0.1f); // Wait for test scene loading
 
             // Assert
-            var persistentObject = GameObject.Find(TestsConfig.DontDestroyOnLoadTestObject);
+            var persistentObject = GameObject.Find(TestsConfig.TestDontDestroyOnLoadObject);
             Assert.That(persistentObject, Is.Not.Null);
             Assert.That(persistentObject.GetComponent<DontDestroyOnLoadComponent>(), Is.Not.Null);
             Assert.That(persistentObject.scene.buildIndex, Is.EqualTo(-1)); // Index of DontDestroyOnLoad scene
-            Assert.That(persistentObject.scene.name, Is.EqualTo("DontDestroyOnLoad")); // Name of DontDestroyOnLoad scene
+            Assert.That(persistentObject.scene.name,
+                Is.EqualTo("DontDestroyOnLoad")); // Name of DontDestroyOnLoad scene
         }
 
         [UnityTest]
@@ -55,13 +54,12 @@ namespace AssetLoader.Tests.Runtime
         {
             // Arrange
             var customConfig = new TestCustomConfig();
-
-            // Act
             AssetLoaderInitializer.Init(customConfig);
             yield return null;
 
             // Assert
-            Assert.That(AssetLoaderInitializer.LoaderConfig.DontDestroyPath, Is.EqualTo(TestsConfig.CustomPath));
+            Assert.That(AssetLoaderInitializer.LoaderConfig.DontDestroyPath,
+                Is.EqualTo(TestsConfig.TestDontDestroyOnLoad));
         }
 
         [UnityTest]
@@ -130,7 +128,7 @@ namespace AssetLoader.Tests.Runtime
         public IEnumerator ResourceLoader_LoadAllConfigsFromResourceFolder_ShouldLoadAllObjects()
         {
             // Act
-            var scriptableObjects = ResourceLoader<ScriptableObject>.LoadAll("Configs");
+            var scriptableObjects = ResourceLoader<ScriptableObject>.LoadAll(TestsConfig.ConfigsPath);
             yield return null;
 
             // Assert
@@ -147,23 +145,5 @@ namespace AssetLoader.Tests.Runtime
             Assert.That(createdObject.TestString, Is.EqualTo(TestsConfig.TestString));
             Assert.That(anotherCreatedObject.AnotherTestString, Is.EqualTo(TestsConfig.AnotherTestString));
         }
-    }
-
-    internal sealed class TestCustomConfig : IAssetLoaderConfig
-    {
-        public string DontDestroyPath => TestsConfig.CustomPath;
-    }
-
-    internal static class TestsConfig
-    {
-        internal const string DontDestroyOnLoadTestObject = "DontDestroyOnLoadTestObject";
-
-        internal const string NotFoundResourceLogWarning =
-            "[ResourceLoader::Load] Failed to load resource at path: Configs/NotCreatedTestScriptableObject";
-
-        internal const string ExplicitPath = "Configs/CreatedTestScriptableObject";
-        internal const string CustomPath = "CustomPath";
-        internal const string TestString = "TestString";
-        internal const string AnotherTestString = "AnotherTestString";
     }
 }
