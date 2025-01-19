@@ -10,23 +10,23 @@ namespace AssetLoader.Runtime
         private static readonly Dictionary<string, T> _resourceCache = new();
         private static readonly Dictionary<string, T[]> _resourceArrayCache = new();
 
-        public static T Load()
+        public static T Load(string path = null)
         {
-            var cacheKey = GetCacheKey(GetPath());
+            var cacheKey = GetCacheKey(path ?? GetPath());
 
             if (_resourceCache.TryGetValue(cacheKey, out var cached))
                 return cached;
 
-            var resource = Resources.Load<T>(GetPath());
+            var resource = Resources.Load<T>(path ?? GetPath());
             if (resource is null)
-                Debug.LogWarning($"[ResourceLoader::Load] Failed to load resource at path: {GetPath()}");
+                Debug.LogWarning($"[ResourceLoader::Load] Failed to load resource at path: {path ?? GetPath()}");
 
             _resourceCache[cacheKey] = resource;
             return resource;
         }
 
-        public static bool TryLoad(out T resource)
-            => resource = Load();
+        public static bool TryLoad(out T resource, string path = null)
+            => resource = Load(path);
 
         public static T[] LoadAll(string path)
         {
