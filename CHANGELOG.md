@@ -27,3 +27,9 @@
 - Added loading resources with explicit path.
 ### Fixed
 - Moved AssetLoaderConfig to Resources folder.
+## [1.2.1] - 2025-01-19
+### Fixed
+- TestDontDestroyOnLoadObject creation during not test scene.
+### Refactor
+- Changed strings to constants in some places.
+- Extruded classes to its own files.
