@@ -21,3 +21,9 @@
 - Changed namespaces and access modifier.
 ### Update
 - Changed README with new AssetLoaderConfig feature.
+## [1.2.0] - 2025-01-19
+### Feature
+- Added Tests.
+- Added loading resources with explicit path.
+### Fixed
+- Moved AssetLoaderConfig to Resources folder.
