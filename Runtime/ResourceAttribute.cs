@@ -5,8 +5,8 @@ namespace AssetLoader.Runtime
     public sealed class ResourceAttribute : Attribute
     {
         public string AssetPath { get; }
-        public string ResourcePath { get; }
         public string Name { get; }
+        private string ResourcePath { get; }
 
         public ResourceAttribute(string assetPath = "", string name = "", string resourcePath = "")
         {
