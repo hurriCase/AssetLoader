@@ -33,3 +33,5 @@
 ### Refactor
 - Changed strings to constants in some places.
 - Extruded classes to its own files.
+## [1.2.2] - 2025-01-30
+- Prevented use the resource path from an external source
