@@ -35,3 +35,9 @@
 - Extruded classes to its own files.
 ## [1.2.2] - 2025-01-30
 - Prevented use the resource path from an external source
+## [1.2.3] - 2025-03-15
+### Refactor
+- Remove link.xml
+- Remove dependencyinjection dependency
+### Fix
+- Fix error on build when managed stripping level set to high
